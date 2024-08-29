@@ -34,36 +34,35 @@ class SceneViewController: UIViewController {
         }
     }
     
+    // TODO - texto deve aparecer
     private func getTextNode(_ textToBeDisplayed: String?, _ imageAnchor: ARImageAnchor) -> SCNNode {
         guard let textToBeDisplayed = textToBeDisplayed else { fatalError("no text to be displayed provided") }
 
+        let planeSize = CGSize(width: 0.10, height: 0.05)
+        
+        let text = SCNText(string: "Seu Texto Aqui esta digitado aqui em o texto bem grande", extrusionDepth: 1)
+        text.font = UIFont.systemFont(ofSize: 20)
+        text.flatness = 0.1
+        text.firstMaterial?.diffuse.contents = UIColor.black
+        text.containerFrame = CGRect(x: 0, y: 0, width: planeSize.width, height: planeSize.height)
+        text.isWrapped = true
+
+        let textNode = SCNNode(geometry: text)
+        let textScale = planeSize.width / CGFloat(text.boundingBox.max.x - text.boundingBox.min.x)
+        textNode.scale = SCNVector3(textScale, textScale, textScale)
+        textNode.position = SCNVector3(-planeSize.width / 2, -planeSize.height / 2, 0.00)
+
+        let plane = SCNPlane(width: planeSize.width, height: planeSize.height)
+        plane.cornerRadius = 0.0075
+        plane.firstMaterial?.diffuse.contents = UIColor.white.withAlphaComponent(0.99)
+
+        let planeNode = SCNNode(geometry: plane)
+        planeNode.eulerAngles.x = -.pi / 2
+        planeNode.position = SCNVector3(0, 0.03, 0)
+        planeNode.addChildNode(textNode)
+
         let node = SCNNode()
-
-        let cardWidth = imageAnchor.referenceImage.physicalSize.width
-        let cardHeight = imageAnchor.referenceImage.physicalSize.height
-
-//        let text = SCNText(string: "Seu Texto Aqui esta digitado aqui em o texto bem grande", extrusionDepth: 1)
-//        text.font = UIFont.systemFont(ofSize: 20)
-//        text.flatness = 0.1
-//        text.firstMaterial?.diffuse.contents = UIColor.red
-//        text.containerFrame = CGRect(x: 0, y: 0, width: cardWidth, height: cardHeight)
-//        text.isWrapped = true
-
-//        let textNode = SCNNode(geometry: text)
-//        let textScale = cardWidth / CGFloat(text.boundingBox.max.x - text.boundingBox.min.x)
-//        textNode.scale = SCNVector3(textScale, textScale, textScale)
-//        textNode.position = SCNVector3(-cardWidth / 2, -cardHeight / 2, 0.00)
-
-        let card = SCNPlane(width: cardWidth, height: cardHeight)
-        card.cornerRadius = 0.003
-        card.firstMaterial?.diffuse.contents = UIColor.purple.withAlphaComponent(0.99)
-
-        let cardNode = SCNNode(geometry: card)
-        cardNode.eulerAngles.x = -.pi / 2
-//        cardNode.addChildNode(textNode)
-//        textNode.eulerAngles.x = -.pi / 2
-
-        node.addChildNode(cardNode)
+        node.addChildNode(planeNode)
 
         return node
     }
