@@ -5,7 +5,7 @@ import ARKit
 class SceneViewController: UIViewController {
     @IBOutlet var sceneView: ARSCNView!
 
-    var pages: [Page]?
+    var pages: [Page]!
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -16,8 +16,7 @@ class SceneViewController: UIViewController {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         let configuration = ARImageTrackingConfiguration()
-        guard let trackingImages = ARReferenceImage.referenceImages(inGroupNamed: "BookPages", bundle: Bundle.main) else { fatalError("No reference images found") }
-        configuration.trackingImages = trackingImages
+        configuration.trackingImages = Set(pages.map { $0.pageImage })
         configuration.maximumNumberOfTrackedImages = 1
         sceneView.session.run(configuration)
     }
@@ -26,40 +25,126 @@ class SceneViewController: UIViewController {
         super.viewWillDisappear(animated)
         sceneView.session.pause()
     }
+    
+    private func getNodeForPage(_ page: Page, _ imageAnchor: ARImageAnchor) -> SCNNode {
+        return switch page.contentType {
+            case .text: getTextNode(page.textToBeDisplayed, imageAnchor)
+            case .image: getImageNode(page.imageToBeDisplayed, imageAnchor)
+            case .video: getVideoNode(page.videoToBeDisplayed, imageAnchor)
+        }
+    }
+    
+    private func getTextNode(_ textToBeDisplayed: String?, _ imageAnchor: ARImageAnchor) -> SCNNode {
+        guard let textToBeDisplayed = textToBeDisplayed else { fatalError("no text to be displayed provided") }
+
+        let node = SCNNode()
+
+        let cardWidth = imageAnchor.referenceImage.physicalSize.width
+        let cardHeight = imageAnchor.referenceImage.physicalSize.height
+
+//        let text = SCNText(string: "Seu Texto Aqui esta digitado aqui em o texto bem grande", extrusionDepth: 1)
+//        text.font = UIFont.systemFont(ofSize: 20)
+//        text.flatness = 0.1
+//        text.firstMaterial?.diffuse.contents = UIColor.red
+//        text.containerFrame = CGRect(x: 0, y: 0, width: cardWidth, height: cardHeight)
+//        text.isWrapped = true
+
+//        let textNode = SCNNode(geometry: text)
+//        let textScale = cardWidth / CGFloat(text.boundingBox.max.x - text.boundingBox.min.x)
+//        textNode.scale = SCNVector3(textScale, textScale, textScale)
+//        textNode.position = SCNVector3(-cardWidth / 2, -cardHeight / 2, 0.00)
+
+        let card = SCNPlane(width: cardWidth, height: cardHeight)
+        card.cornerRadius = 0.003
+        card.firstMaterial?.diffuse.contents = UIColor.purple.withAlphaComponent(0.99)
+
+        let cardNode = SCNNode(geometry: card)
+        cardNode.eulerAngles.x = -.pi / 2
+//        cardNode.addChildNode(textNode)
+//        textNode.eulerAngles.x = -.pi / 2
+
+        node.addChildNode(cardNode)
+
+        return node
+    }
+
+    private func getImageNode(_ imageToBeDisplayed: UIImage?, _ imageAnchor: ARImageAnchor) -> SCNNode {
+        guard let imageToBeDisplayed = imageToBeDisplayed else { fatalError("no image to be displayed provided") }
+        
+        let planeSize = getPlaneSize(for: imageToBeDisplayed.size, withMaxSize: 0.15)
+        
+        let plane = SCNPlane(width: planeSize.width, height: planeSize.height)
+        plane.firstMaterial?.diffuse.contents = imageToBeDisplayed
+        plane.firstMaterial?.isDoubleSided = true
+        
+        let imageNode = SCNNode(geometry: plane)
+        imageNode.eulerAngles.x = -.pi / 2
+        imageNode.position = SCNVector3(0, 0.03, 0)
+        
+        let node = SCNNode()
+        node.addChildNode(imageNode)
+
+        return node
+    }
+
+    private func getVideoNode(_ videoToBeDisplayed: URL?, _ imageAnchor: ARImageAnchor) -> SCNNode {
+        guard let videoToBeDisplayed = videoToBeDisplayed else { fatalError("no video to be displayed provided") }
+
+        let player = AVPlayer(url: videoToBeDisplayed)
+
+        let skVideoNode = SKVideoNode(avPlayer: player)
+        skVideoNode.yScale = -1
+        skVideoNode.play()
+
+        let track = AVURLAsset(url: videoToBeDisplayed).tracks(withMediaType: AVMediaType.video).first!
+        let videoSize = track.naturalSize.applying(track.preferredTransform)
+
+        let skScene = SKScene(size: videoSize)
+        skScene.addChild(skVideoNode)
+        
+        skVideoNode.position = CGPoint(x: skScene.size.width / 2, y: skScene.size.height / 2)
+        
+        let planeSize = getPlaneSize(for: videoSize, withMaxSize: 0.15)
+        
+        let plane = SCNPlane(width: planeSize.width, height: planeSize.height)
+        plane.firstMaterial?.diffuse.contents = skScene
+        plane.firstMaterial?.isDoubleSided = true
+        
+        let videoNode = SCNNode(geometry: plane)
+        videoNode.eulerAngles.x = -.pi / 2
+        videoNode.position = SCNVector3(0, 0.03, 0)
+        
+        let node = SCNNode()
+        node.addChildNode(videoNode)
+
+        NotificationCenter.default.addObserver(forName: .AVPlayerItemDidPlayToEndTime, object: player.currentItem, queue: .main) { _ in
+            player.seek(to: CMTime.zero)
+            player.play()
+        }
+        
+        return node
+    }
+    
+    private func getPlaneSize(for size: CGSize, withMaxSize maxSize: CGFloat) -> CGSize {
+        let aspectRatio = size.width / size.height
+        
+        return aspectRatio > 1
+            ? CGSize(width: maxSize, height: maxSize / aspectRatio)
+            : CGSize(width: maxSize * aspectRatio, height: maxSize)
+    }
 }
 
 extension SceneViewController: ARSCNViewDelegate {
     func renderer(_ renderer: SCNSceneRenderer, nodeFor anchor: ARAnchor) -> SCNNode? {
-        let node = SCNNode()
+        guard let imageAnchor = anchor as? ARImageAnchor else { return nil }
+        guard let page = pages.first(where: { $0.pageImage == imageAnchor.referenceImage }) else { return nil }
+        return getNodeForPage(page, imageAnchor)
+    }
+    
+    func renderer(_ renderer: SCNSceneRenderer, didUpdate node: SCNNode, for anchor: ARAnchor) {
+        guard let imageAnchor = anchor as? ARImageAnchor else { return }
+        guard !node.isHidden else { return }
 
-        if let imageAnchor = anchor as? ARImageAnchor {
-            let cardWidth = imageAnchor.referenceImage.physicalSize.width
-            let cardHeight = imageAnchor.referenceImage.physicalSize.height
-
-            let text = SCNText(string: "Seu Texto Aqui esta digitado aqui em o texto bem grande", extrusionDepth: 1)
-            text.font = UIFont.systemFont(ofSize: 20)
-            text.flatness = 0.1
-            text.firstMaterial?.diffuse.contents = UIColor.red
-//            text.containerFrame = CGRect(x: 0, y: 0, width: cardWidth, height: cardHeight)
-//            text.isWrapped = true
-
-            let textNode = SCNNode(geometry: text)
-//            let textScale = cardWidth / CGFloat(text.boundingBox.max.x - text.boundingBox.min.x)
-//            textNode.scale = SCNVector3(textScale, textScale, textScale)
-//            textNode.position = SCNVector3(-cardWidth / 2, -cardHeight / 2, 0.00)
-
-//            let card = SCNPlane(width: cardWidth, height: cardHeight)
-//            card.cornerRadius = 0.003
-//            card.firstMaterial?.diffuse.contents = UIColor.purple.withAlphaComponent(0.99)
-
-//            let cardNode = SCNNode(geometry: card)
-//            cardNode.eulerAngles.x = -.pi / 2
-//            cardNode.addChildNode(textNode)
-            textNode.eulerAngles.x = -.pi / 2
-
-            node.addChildNode(textNode)
-        }
-
-        return node
+        sceneView.session.remove(anchor: imageAnchor)
     }
 }

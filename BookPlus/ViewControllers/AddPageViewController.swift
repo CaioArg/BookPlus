@@ -92,7 +92,6 @@ class AddPageViewController: UIViewController, UINavigationControllerDelegate {
         var page = Page(
             bookName: bookName,
             pageNumber: pageNumber,
-            pagePhysicalWidth: pagePhysicalWidth,
             pageImage: pageImage,
             contentType: contentType
         )
