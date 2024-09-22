@@ -25,7 +25,7 @@ class SceneViewController: UIViewController {
         super.viewWillDisappear(animated)
         sceneView.session.pause()
     }
-    
+
     private func getNodeForPage(_ page: Page, _ imageAnchor: ARImageAnchor) -> SCNNode {
         return switch page.contentType {
             case .text: getTextNode(page.textToBeDisplayed, imageAnchor)
@@ -33,53 +33,43 @@ class SceneViewController: UIViewController {
             case .video: getVideoNode(page.videoToBeDisplayed, imageAnchor)
         }
     }
-    
-    // TODO - texto deve aparecer
+
     private func getTextNode(_ textToBeDisplayed: String?, _ imageAnchor: ARImageAnchor) -> SCNNode {
         guard let textToBeDisplayed = textToBeDisplayed else { fatalError("no text to be displayed provided") }
 
-        let planeSize = CGSize(width: 0.10, height: 0.05)
-        
-        let text = SCNText(string: "Seu Texto Aqui esta digitado aqui em o texto bem grande", extrusionDepth: 1)
-        text.font = UIFont.systemFont(ofSize: 20)
-        text.flatness = 0.1
-        text.firstMaterial?.diffuse.contents = UIColor.black
-        text.containerFrame = CGRect(x: 0, y: 0, width: planeSize.width, height: planeSize.height)
-        text.isWrapped = true
+        let textGeometry = SCNText(string: splitIntoLines(textToBeDisplayed, charsPerLine: 35), extrusionDepth: 0.1)
+        textGeometry.font = UIFont.systemFont(ofSize: 0.6)
+        textGeometry.firstMaterial?.diffuse.contents = UIColor.black
 
-        let textNode = SCNNode(geometry: text)
-        let textScale = planeSize.width / CGFloat(text.boundingBox.max.x - text.boundingBox.min.x)
-        textNode.scale = SCNVector3(textScale, textScale, textScale)
-        textNode.position = SCNVector3(-planeSize.width / 2, -planeSize.height / 2, 0.00)
+        let textNode = SCNNode(geometry: textGeometry)
+        textNode.eulerAngles.x = -.pi / 2
+        textNode.position = SCNVector3(0, 0.005, 0)
+        textNode.scale = SCNVector3(0.0025, 0.0025, 0.0025)
 
-        let plane = SCNPlane(width: planeSize.width, height: planeSize.height)
-        plane.cornerRadius = 0.0075
-        plane.firstMaterial?.diffuse.contents = UIColor.white.withAlphaComponent(0.99)
-
-        let planeNode = SCNNode(geometry: plane)
-        planeNode.eulerAngles.x = -.pi / 2
-        planeNode.position = SCNVector3(0, 0.03, 0)
-        planeNode.addChildNode(textNode)
+        let textWidth = textGeometry.boundingBox.max.x - textGeometry.boundingBox.min.x
+        let textHeight = textGeometry.boundingBox.max.y - textGeometry.boundingBox.min.y
+        textNode.pivot = SCNMatrix4MakeTranslation(textWidth / 2, textHeight / 2, 0)
 
         let node = SCNNode()
-        node.addChildNode(planeNode)
-
+        node.addChildNode(textNode)
+        
         return node
     }
 
     private func getImageNode(_ imageToBeDisplayed: UIImage?, _ imageAnchor: ARImageAnchor) -> SCNNode {
         guard let imageToBeDisplayed = imageToBeDisplayed else { fatalError("no image to be displayed provided") }
-        
-        let planeSize = getPlaneSize(for: imageToBeDisplayed.size, withMaxSize: 0.15)
-        
+
+        let planeSize = getPlaneSize(for: imageToBeDisplayed.size, withMaxSize: 0.08)
+
         let plane = SCNPlane(width: planeSize.width, height: planeSize.height)
         plane.firstMaterial?.diffuse.contents = imageToBeDisplayed
         plane.firstMaterial?.isDoubleSided = true
-        
+        plane.cornerRadius = 0.003
+
         let imageNode = SCNNode(geometry: plane)
         imageNode.eulerAngles.x = -.pi / 2
-        imageNode.position = SCNVector3(0, 0.03, 0)
-        
+        imageNode.position = SCNVector3(0, 0.005, 0)
+
         let node = SCNNode()
         node.addChildNode(imageNode)
 
@@ -100,19 +90,20 @@ class SceneViewController: UIViewController {
 
         let skScene = SKScene(size: videoSize)
         skScene.addChild(skVideoNode)
-        
+
         skVideoNode.position = CGPoint(x: skScene.size.width / 2, y: skScene.size.height / 2)
-        
-        let planeSize = getPlaneSize(for: videoSize, withMaxSize: 0.15)
-        
+
+        let planeSize = getPlaneSize(for: videoSize, withMaxSize: 0.08)
+
         let plane = SCNPlane(width: planeSize.width, height: planeSize.height)
         plane.firstMaterial?.diffuse.contents = skScene
         plane.firstMaterial?.isDoubleSided = true
-        
+        plane.cornerRadius = 0.003
+
         let videoNode = SCNNode(geometry: plane)
         videoNode.eulerAngles.x = -.pi / 2
-        videoNode.position = SCNVector3(0, 0.03, 0)
-        
+        videoNode.position = SCNVector3(0, 0.005, 0)
+
         let node = SCNNode()
         node.addChildNode(videoNode)
 
@@ -120,13 +111,13 @@ class SceneViewController: UIViewController {
             player.seek(to: CMTime.zero)
             player.play()
         }
-        
+
         return node
     }
-    
+
     private func getPlaneSize(for size: CGSize, withMaxSize maxSize: CGFloat) -> CGSize {
         let aspectRatio = size.width / size.height
-        
+
         return aspectRatio > 1
             ? CGSize(width: maxSize, height: maxSize / aspectRatio)
             : CGSize(width: maxSize * aspectRatio, height: maxSize)
@@ -139,7 +130,7 @@ extension SceneViewController: ARSCNViewDelegate {
         guard let page = pages.first(where: { $0.pageImage == imageAnchor.referenceImage }) else { return nil }
         return getNodeForPage(page, imageAnchor)
     }
-    
+
     func renderer(_ renderer: SCNSceneRenderer, didUpdate node: SCNNode, for anchor: ARAnchor) {
         guard let imageAnchor = anchor as? ARImageAnchor else { return }
         guard !node.isHidden else { return }

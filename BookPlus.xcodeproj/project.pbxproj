@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 56;
+	objectVersion = 70;
 	objects = {
 
 /* Begin PBXBuildFile section */
@@ -34,6 +34,10 @@
 		259243612C7BDB330051212F /* ListPagesViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ListPagesViewController.swift; sourceTree = "<group>"; };
 		259243632C7BDB460051212F /* PageDetailViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PageDetailViewController.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
+
+/* Begin PBXFileSystemSynchronizedRootGroup section */
+		2586BA742CA0DD42006DEC95 /* Util */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = Util; sourceTree = "<group>"; };
+/* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFrameworksBuildPhase section */
 		256613FA2C3DBE1F00454551 /* Frameworks */ = {
@@ -74,6 +78,7 @@
 		256613FF2C3DBE1F00454551 /* BookPlus */ = {
 			isa = PBXGroup;
 			children = (
+				2586BA742CA0DD42006DEC95 /* Util */,
 				2538235B2C7CD6530022DBDD /* Domain */,
 				259243602C7BDB030051212F /* ViewControllers */,
 				256614002C3DBE1F00454551 /* AppDelegate.swift */,
@@ -110,6 +115,9 @@
 			buildRules = (
 			);
 			dependencies = (
+			);
+			fileSystemSynchronizedGroups = (
+				2586BA742CA0DD42006DEC95 /* Util */,
 			);
 			name = BookPlus;
 			productName = BookPlus;

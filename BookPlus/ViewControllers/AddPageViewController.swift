@@ -10,9 +10,9 @@ class AddPageViewController: UIViewController, UINavigationControllerDelegate {
     @IBOutlet weak var textToBeDisplayedField: UITextField!
     @IBOutlet weak var selectImageToBeDisplayedButton: UIButton!
     @IBOutlet weak var selectVideoToBeDisplayedButton: UIButton!
-    
+
     var onSave: ((Page) -> Void)?
-    
+
     private var pageImage: UIImage?
     private var imageToBeDisplayed: UIImage?
     private var videoToBeDisplayed: URL?
@@ -20,14 +20,14 @@ class AddPageViewController: UIViewController, UINavigationControllerDelegate {
     private var pageImagePickerController = UIImagePickerController()
     private var imageToBeDisplayedPickerController = UIImagePickerController()
     private var videoToBeDisplayedPickerController = UIImagePickerController()
-    
+
     override func viewDidLoad() {
         super.viewDidLoad()
 
         view.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(dismissKeyboard)))
 
         self.title = "Add Page"
-        
+
         bookNameField.delegate = self
         pageNumberField.delegate = self
         pagePhysicalWidthField.delegate = self
@@ -46,7 +46,7 @@ class AddPageViewController: UIViewController, UINavigationControllerDelegate {
         videoToBeDisplayedPickerController.delegate = self
         videoToBeDisplayedPickerController.sourceType = .photoLibrary
         videoToBeDisplayedPickerController.mediaTypes = [UTType.movie.identifier]
-        
+
         navigationItem.rightBarButtonItem = UIBarButtonItem(title: "Save", style: .done, target: self, action: #selector(savePage))
     }
 
@@ -81,12 +81,12 @@ class AddPageViewController: UIViewController, UINavigationControllerDelegate {
         let pagePhysicalWidth = CGFloat(pagePhysicalWidthInCentimeters / 100)
 
         let contentType = ContentType.allCases[contentTypeField.selectedRow(inComponent: 0)]
-        
+
         if (pageImage?.cgImage == nil) {
             showValidationError()
             return
         }
-        
+
         let pageImage = ARReferenceImage(pageImage!.cgImage!, orientation: .up, physicalWidth: pagePhysicalWidth)
 
         var page = Page(
@@ -95,7 +95,7 @@ class AddPageViewController: UIViewController, UINavigationControllerDelegate {
             pageImage: pageImage,
             contentType: contentType
         )
-        
+
         if contentType == .text {
             guard let textToBeDisplayed = textToBeDisplayedField.text, !textToBeDisplayed.isEmpty else {
                 showValidationError()
@@ -104,7 +104,7 @@ class AddPageViewController: UIViewController, UINavigationControllerDelegate {
 
             page.textToBeDisplayed = textToBeDisplayed
         }
-        
+
         if contentType == .image {
             guard let imageToBeDisplayed = imageToBeDisplayed else {
                 showValidationError()
@@ -113,7 +113,7 @@ class AddPageViewController: UIViewController, UINavigationControllerDelegate {
 
             page.imageToBeDisplayed = imageToBeDisplayed
         }
-        
+
         if contentType == .video {
             guard let videoToBeDisplayed = videoToBeDisplayed else {
                 showValidationError()
@@ -126,7 +126,7 @@ class AddPageViewController: UIViewController, UINavigationControllerDelegate {
         onSave?(page)
         navigationController?.popViewController(animated: true)
     }
-    
+
     private func showValidationError() {
         let alert = UIAlertController(title: "Missing data", message: "Not all fields were filled", preferredStyle: .alert)
         alert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
@@ -173,7 +173,7 @@ extension AddPageViewController: UIImagePickerControllerDelegate {
 
             picker.dismiss(animated: true, completion: nil)
         }
-        
+
         if picker == imageToBeDisplayedPickerController {
             guard let selectedImage = info[.originalImage] as? UIImage else { return }
 
