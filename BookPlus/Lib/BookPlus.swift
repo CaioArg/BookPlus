@@ -11,8 +11,8 @@ class BookPlus: NSObject {
         self.sceneView = sceneView
         self.configuration = configuration
 
-        configuration.trackingImages = Set(self.pages.map { $0.pageImage })
-        configuration.maximumNumberOfTrackedImages = 1
+        self.configuration.trackingImages = Set(self.pages.map { $0.pageImage })
+        self.configuration.maximumNumberOfTrackedImages = 1
     }
 
     private func getNodeForPage(_ page: Page, _ imageAnchor: ARImageAnchor) -> SCNNode {
@@ -27,7 +27,7 @@ class BookPlus: NSObject {
         guard let textToBeDisplayed = textToBeDisplayed else { fatalError("no text to be displayed provided") }
 
         let textGeometry = SCNText(string: splitIntoLines(textToBeDisplayed, charsPerLine: 35), extrusionDepth: 0.1)
-        textGeometry.font = UIFont.systemFont(ofSize: 0.6)
+        textGeometry.font = UIFont.systemFont(ofSize: 2.5)
         textGeometry.firstMaterial?.diffuse.contents = UIColor.black
 
         let textNode = SCNNode(geometry: textGeometry)
@@ -48,7 +48,7 @@ class BookPlus: NSObject {
     private func getImageNode(_ imageToBeDisplayed: UIImage?, _ imageAnchor: ARImageAnchor) -> SCNNode {
         guard let imageToBeDisplayed = imageToBeDisplayed else { fatalError("no image to be displayed provided") }
 
-        let planeSize = getPlaneSize(for: imageToBeDisplayed.size, withMaxSize: 0.08)
+        let planeSize = getPlaneSize(for: imageToBeDisplayed.size, withMaxSize: 0.15)
 
         let plane = SCNPlane(width: planeSize.width, height: planeSize.height)
         plane.firstMaterial?.diffuse.contents = imageToBeDisplayed
@@ -82,7 +82,7 @@ class BookPlus: NSObject {
 
         skVideoNode.position = CGPoint(x: skScene.size.width / 2, y: skScene.size.height / 2)
 
-        let planeSize = getPlaneSize(for: videoSize, withMaxSize: 0.08)
+        let planeSize = getPlaneSize(for: videoSize, withMaxSize: 0.15)
 
         let plane = SCNPlane(width: planeSize.width, height: planeSize.height)
         plane.firstMaterial?.diffuse.contents = skScene
