@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 70;
+	objectVersion = 56;
 	objects = {
 
 /* Begin PBXBuildFile section */
@@ -15,6 +15,8 @@
 		256614082C3DBE1F00454551 /* Base in Resources */ = {isa = PBXBuildFile; fileRef = 256614072C3DBE1F00454551 /* Base */; };
 		2566140A2C3DBE2000454551 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 256614092C3DBE2000454551 /* Assets.xcassets */; };
 		2566140D2C3DBE2000454551 /* Base in Resources */ = {isa = PBXBuildFile; fileRef = 2566140C2C3DBE2000454551 /* Base */; };
+		2586BA7A2CA17981006DEC95 /* BookPlus.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2586BA792CA1797B006DEC95 /* BookPlus.swift */; };
+		2586BA7D2CA17E13006DEC95 /* StringUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2586BA7B2CA17E13006DEC95 /* StringUtils.swift */; };
 		2592435F2C7BDADD0051212F /* AddPageViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2592435E2C7BDADD0051212F /* AddPageViewController.swift */; };
 		259243622C7BDB330051212F /* ListPagesViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 259243612C7BDB330051212F /* ListPagesViewController.swift */; };
 		259243642C7BDB460051212F /* PageDetailViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 259243632C7BDB460051212F /* PageDetailViewController.swift */; };
@@ -30,14 +32,12 @@
 		256614072C3DBE1F00454551 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		256614092C3DBE2000454551 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		2566140C2C3DBE2000454551 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
+		2586BA792CA1797B006DEC95 /* BookPlus.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BookPlus.swift; sourceTree = "<group>"; };
+		2586BA7B2CA17E13006DEC95 /* StringUtils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StringUtils.swift; sourceTree = "<group>"; };
 		2592435E2C7BDADD0051212F /* AddPageViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddPageViewController.swift; sourceTree = "<group>"; };
 		259243612C7BDB330051212F /* ListPagesViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ListPagesViewController.swift; sourceTree = "<group>"; };
 		259243632C7BDB460051212F /* PageDetailViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PageDetailViewController.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
-
-/* Begin PBXFileSystemSynchronizedRootGroup section */
-		2586BA742CA0DD42006DEC95 /* Util */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = Util; sourceTree = "<group>"; };
-/* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFrameworksBuildPhase section */
 		256613FA2C3DBE1F00454551 /* Frameworks */ = {
@@ -78,7 +78,8 @@
 		256613FF2C3DBE1F00454551 /* BookPlus */ = {
 			isa = PBXGroup;
 			children = (
-				2586BA742CA0DD42006DEC95 /* Util */,
+				2586BA782CA17970006DEC95 /* Lib */,
+				2586BA7C2CA17E13006DEC95 /* Util */,
 				2538235B2C7CD6530022DBDD /* Domain */,
 				259243602C7BDB030051212F /* ViewControllers */,
 				256614002C3DBE1F00454551 /* AppDelegate.swift */,
@@ -88,6 +89,22 @@
 				2566140B2C3DBE2000454551 /* LaunchScreen.storyboard */,
 			);
 			path = BookPlus;
+			sourceTree = "<group>";
+		};
+		2586BA782CA17970006DEC95 /* Lib */ = {
+			isa = PBXGroup;
+			children = (
+				2586BA792CA1797B006DEC95 /* BookPlus.swift */,
+			);
+			path = Lib;
+			sourceTree = "<group>";
+		};
+		2586BA7C2CA17E13006DEC95 /* Util */ = {
+			isa = PBXGroup;
+			children = (
+				2586BA7B2CA17E13006DEC95 /* StringUtils.swift */,
+			);
+			path = Util;
 			sourceTree = "<group>";
 		};
 		259243602C7BDB030051212F /* ViewControllers */ = {
@@ -115,9 +132,6 @@
 			buildRules = (
 			);
 			dependencies = (
-			);
-			fileSystemSynchronizedGroups = (
-				2586BA742CA0DD42006DEC95 /* Util */,
 			);
 			name = BookPlus;
 			productName = BookPlus;
@@ -176,12 +190,14 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				2586BA7D2CA17E13006DEC95 /* StringUtils.swift in Sources */,
 				2592435F2C7BDADD0051212F /* AddPageViewController.swift in Sources */,
 				256614012C3DBE1F00454551 /* AppDelegate.swift in Sources */,
 				2538235D2C7CD6680022DBDD /* Page.swift in Sources */,
 				2538235A2C7BDD0F0022DBDD /* SceneViewController.swift in Sources */,
 				2538235F2C7CD6970022DBDD /* ContentType.swift in Sources */,
 				259243642C7BDB460051212F /* PageDetailViewController.swift in Sources */,
+				2586BA7A2CA17981006DEC95 /* BookPlus.swift in Sources */,
 				259243622C7BDB330051212F /* ListPagesViewController.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
