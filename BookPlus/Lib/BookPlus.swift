@@ -11,14 +11,6 @@ class BookPlus: NSObject {
         self.sceneView = sceneView
         self.configuration = configuration
 
-        self.pages.append(Page(
-            bookName: "Clean Code",
-            pageNumber: 1,
-            pageImage: ARReferenceImage.referenceImages(inGroupNamed: "BookPages", bundle: nil)!.first!,
-            contentType: ContentType.text,
-            textToBeDisplayed: "Texto de exemplo de um texto consideravelmente grande, sendo que o texto pode ficar cada vez maior na verdade, até chegar em um tamanho absurdo!"
-        ))
-
         configuration.trackingImages = Set(self.pages.map { $0.pageImage })
         configuration.maximumNumberOfTrackedImages = 1
     }
@@ -131,7 +123,6 @@ extension BookPlus: ARSCNViewDelegate {
     func renderer(_ renderer: SCNSceneRenderer, didUpdate node: SCNNode, for anchor: ARAnchor) {
         guard let imageAnchor = anchor as? ARImageAnchor else { return }
         guard !node.isHidden else { return }
-
         sceneView.session.remove(anchor: imageAnchor)
     }
 }
