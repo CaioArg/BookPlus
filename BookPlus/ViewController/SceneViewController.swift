@@ -1,18 +1,18 @@
-import UIKit
-import SceneKit
 import ARKit
 
 class SceneViewController: UIViewController {
-    @IBOutlet var sceneView: ARSCNView!
+    @IBOutlet weak var sceneView: ARSCNView!
+
     var pages: [Page]!
-    var configuration: ARImageTrackingConfiguration!
-    var bookPlus: BookPlus!
+
+    private var configuration: ARImageTrackingConfiguration!
+    private var bookPlus: BookPlus!
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        configuration = ARImageTrackingConfiguration()
         sceneView.scene = SCNScene()
-        bookPlus = BookPlus(pages, sceneView, configuration)
+        configuration = ARImageTrackingConfiguration()
+        bookPlus = BookPlus(for: pages, with: sceneView, and: configuration)
         sceneView.delegate = bookPlus
     }
 

@@ -1,9 +1,9 @@
 import UIKit
 
 class ListPagesViewController: UIViewController {
-    @IBOutlet var tableView: UITableView!
+    @IBOutlet weak var tableView: UITableView!
 
-    var pages = [Page]()
+    private var pages = [Page]()
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -27,9 +27,7 @@ class ListPagesViewController: UIViewController {
 
     @IBAction func didTapBook() {
         let sceneViewController = storyboard?.instantiateViewController(withIdentifier: "scene") as! SceneViewController
-
         sceneViewController.pages = pages
-
         navigationController?.pushViewController(sceneViewController, animated: true)
     }
 }
@@ -47,7 +45,6 @@ extension ListPagesViewController: UITableViewDataSource {
 
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let page = pages[indexPath.row]
-
         let cell = tableView.dequeueReusableCell(withIdentifier: "cell", for: indexPath)
         cell.textLabel?.text = "\(page.bookName) | \(page.pageNumber)"
         return cell

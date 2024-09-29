@@ -1,5 +1,10 @@
 import ARKit
-import UIKit
+
+private enum ContentType: String, CaseIterable {
+    case text = "Text"
+    case image = "Image"
+    case video = "Video"
+}
 
 class AddPageViewController: UIViewController, UINavigationControllerDelegate {
     @IBOutlet weak var bookNameField: UITextField!
@@ -80,8 +85,6 @@ class AddPageViewController: UIViewController, UINavigationControllerDelegate {
 
         let pagePhysicalWidth = CGFloat(pagePhysicalWidthInCentimeters / 100)
 
-        let contentType = ContentType.allCases[contentTypeField.selectedRow(inComponent: 0)]
-
         if (pageImage?.cgImage == nil) {
             showValidationError()
             return
@@ -89,42 +92,49 @@ class AddPageViewController: UIViewController, UINavigationControllerDelegate {
 
         let pageImage = ARReferenceImage(pageImage!.cgImage!, orientation: .up, physicalWidth: pagePhysicalWidth)
 
-        var page = Page(
+        let contentType = ContentType.allCases[contentTypeField.selectedRow(inComponent: 0)]
+        guard let renderStrategy = getRenderStrategy(contentType) else {
+            showValidationError()
+            return
+        }
+
+        let page = Page(
             bookName: bookName,
             pageNumber: pageNumber,
             pageImage: pageImage,
-            contentType: contentType
+            renderStrategy: renderStrategy
         )
 
+        onSave?(page)
+        navigationController?.popViewController(animated: true)
+    }
+
+    private func getRenderStrategy(_ contentType: ContentType) -> RenderStrategy? {
         if contentType == .text {
             guard let textToBeDisplayed = textToBeDisplayedField.text, !textToBeDisplayed.isEmpty else {
-                showValidationError()
-                return
+                return nil
             }
 
-            page.textToBeDisplayed = textToBeDisplayed
+            return TextRenderStrategy(for: textToBeDisplayed)
         }
 
         if contentType == .image {
             guard let imageToBeDisplayed = imageToBeDisplayed else {
-                showValidationError()
-                return
+                return nil
             }
 
-            page.imageToBeDisplayed = imageToBeDisplayed
+            return ImageRenderStrategy(for: imageToBeDisplayed)
         }
 
         if contentType == .video {
             guard let videoToBeDisplayed = videoToBeDisplayed else {
-                showValidationError()
-                return
+                return nil
             }
 
-            page.videoToBeDisplayed = videoToBeDisplayed
+            return VideoRenderStrategy(for: videoToBeDisplayed)
         }
 
-        onSave?(page)
-        navigationController?.popViewController(animated: true)
+        return nil
     }
 
     private func showValidationError() {
