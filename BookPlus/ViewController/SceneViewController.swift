@@ -12,7 +12,7 @@ class SceneViewController: UIViewController {
         super.viewDidLoad()
         sceneView.scene = SCNScene()
         configuration = ARImageTrackingConfiguration()
-        bookPlus = BookPlus(for: pages, with: sceneView, and: configuration)
+        bookPlus = BookPlus(with: pages, for: sceneView, and: configuration)
         sceneView.delegate = bookPlus
     }
 

@@ -5,7 +5,7 @@ public class BookPlus: NSObject, ARSCNViewDelegate {
     private let sceneView: ARSCNView!
     private let configuration: ARImageTrackingConfiguration!
 
-    public init(for pages: [Page], with sceneView: ARSCNView, and configuration: ARImageTrackingConfiguration) {
+    public init(with pages: [Page], for sceneView: ARSCNView, and configuration: ARImageTrackingConfiguration) {
         self.pages = pages
         self.sceneView = sceneView
         self.configuration = configuration
