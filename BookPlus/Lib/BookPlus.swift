@@ -11,6 +11,11 @@ public class BookPlus: NSObject, ARSCNViewDelegate {
 
         self.configuration.trackingImages = Set(self.pages.map { $0.pageImage })
         self.configuration.maximumNumberOfTrackedImages = 1
+
+        super.init()
+
+        self.sceneView.scene = SCNScene()
+        self.sceneView.delegate = self
     }
     
     public func renderer(_ renderer: SCNSceneRenderer, nodeFor anchor: ARAnchor) -> SCNNode? {
