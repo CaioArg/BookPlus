@@ -27,7 +27,7 @@ class ListPagesViewController: UIViewController {
 
     @IBAction func didTapBook() {
         let sceneViewController = storyboard?.instantiateViewController(withIdentifier: "scene") as! SceneViewController
-        sceneViewController.pages = pages
+        sceneViewController.imageEntries = pages
         navigationController?.pushViewController(sceneViewController, animated: true)
     }
 }

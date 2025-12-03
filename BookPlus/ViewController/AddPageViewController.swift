@@ -101,7 +101,7 @@ class AddPageViewController: UIViewController, UINavigationControllerDelegate {
         let page = Page(
             bookName: bookName,
             pageNumber: pageNumber,
-            pageImage: pageImage,
+            image: pageImage,
             renderStrategy: renderStrategy
         )
 

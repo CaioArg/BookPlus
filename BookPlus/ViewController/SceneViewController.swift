@@ -2,21 +2,21 @@ import ARKit
 
 class SceneViewController: UIViewController {
     @IBOutlet weak var sceneView: ARSCNView!
-    var pages: [Page]!
-    private var bookPlus: BookPlus!
+    var imageEntries: [ImageEntry]!
+    private var imageAmpLib: ImageAmpLib!
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        self.bookPlus = BookPlus(with: pages, for: sceneView)
+        self.imageAmpLib = ImageAmpLib(with: imageEntries, for: sceneView)
     }
 
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        self.bookPlus.run()
+        self.imageAmpLib.run()
     }
 
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
-        self.bookPlus.pause()
+        self.imageAmpLib.pause()
     }
 }

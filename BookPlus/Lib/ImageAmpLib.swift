@@ -1,15 +1,15 @@
 import ARKit
 
-public class BookPlus: NSObject, ARSCNViewDelegate {
-    private let pages: [Page]
+public class ImageAmpLib: NSObject, ARSCNViewDelegate {
+    private let imageEntries: [ImageEntry]
     private let sceneView: ARSCNView
     private let configuration = ARImageTrackingConfiguration()
 
-    public init(with pages: [Page], for sceneView: ARSCNView) {
-        self.pages = pages
+    public init(with imageEntries: [ImageEntry], for sceneView: ARSCNView) {
+        self.imageEntries = imageEntries
         self.sceneView = sceneView
 
-        self.configuration.trackingImages = Set(self.pages.map { $0.pageImage })
+        self.configuration.trackingImages = Set(self.imageEntries.map { $0.image })
         self.configuration.maximumNumberOfTrackedImages = 1
 
         super.init()
@@ -20,7 +20,7 @@ public class BookPlus: NSObject, ARSCNViewDelegate {
     
     public func renderer(_ renderer: SCNSceneRenderer, nodeFor anchor: ARAnchor) -> SCNNode? {
         guard let anchor = anchor as? ARImageAnchor else { return nil }
-        guard let renderStrategy = pages.first(where: { $0.pageImage == anchor.referenceImage })?.renderStrategy else { return nil }
+        guard let renderStrategy = imageEntries.first(where: { $0.image == anchor.referenceImage })?.renderStrategy else { return nil }
         return renderStrategy.getNode()
     }
 
